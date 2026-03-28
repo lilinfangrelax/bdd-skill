@@ -5,7 +5,10 @@ Windows desktop tests using pytest-bdd.
 import pytest
 from pytest_bdd import scenario
 
-pytest_plugins = ["bdd_project.steps.windows.steps"]
+pytest_plugins = [
+    "bdd_project.steps.windows.conftest",
+    "bdd_project.steps.windows.steps",
+]
 
 
 @pytest.mark.windows

@@ -1,19 +1,19 @@
 from pytest_bdd import given, parsers, then, when
 
 
-@given("macOS 应用已启动")
-def macos_app_started(macos_app):
+@given("应用已启动")
+def app_started(macos_app):
     """macOS application is started."""
     pass
 
 
-@when(parsers.parse('点击菜单 "{menu_name}"'))
-def click_menu(macos_app, menu_name: str):
-    """Click a menu item in macOS app."""
+@when(parsers.parse('用户创建任务 "{task_name}"'))
+def create_task(macos_app, task_name: str):
+    """Create a task in macOS app."""
     pass
 
 
-@then(parsers.parse('对话框显示 "{message}"'))
-def check_dialog(macos_app, message: str):
-    """Verify dialog shows expected message."""
+@then("任务创建成功")
+def task_created_successfully(macos_app):
+    """Verify task was created successfully."""
     pass

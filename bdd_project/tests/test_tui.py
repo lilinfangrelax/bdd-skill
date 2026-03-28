@@ -5,7 +5,10 @@ TUI (Terminal User Interface) tests using pytest-bdd.
 import pytest
 from pytest_bdd import scenario
 
-pytest_plugins = ["bdd_project.steps.tui.steps"]
+pytest_plugins = [
+    "bdd_project.steps.tui.conftest",
+    "bdd_project.steps.tui.steps",
+]
 
 
 @pytest.mark.tui

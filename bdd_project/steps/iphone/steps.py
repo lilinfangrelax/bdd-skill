@@ -1,19 +1,19 @@
 from pytest_bdd import given, parsers, then, when
 
 
-@given("iOS 应用已启动")
-def ios_app_started(ios_driver):
+@given("应用已启动")
+def app_started(ios_driver):
     """iOS application is started."""
     pass
 
 
-@when(parsers.parse('滑动到 "{direction}"'))
-def swipe(ios_driver, direction: str):
-    """Swipe in a direction on iOS app."""
+@when(parsers.parse('用户创建任务 "{task_name}"'))
+def create_task(ios_driver, task_name: str):
+    """Create a task in iOS app."""
     pass
 
 
-@then(parsers.parse('元素 "{element_id}" 可见'))
-def check_element_visible(ios_driver, element_id: str):
-    """Verify element is visible on screen."""
+@then("任务创建成功")
+def task_created_successfully(ios_driver):
+    """Verify task was created successfully."""
     pass

@@ -5,7 +5,10 @@ Android mobile tests using pytest-bdd.
 import pytest
 from pytest_bdd import scenario
 
-pytest_plugins = ["bdd_project.steps.android.steps"]
+pytest_plugins = [
+    "bdd_project.steps.android.conftest",
+    "bdd_project.steps.android.steps",
+]
 
 
 @pytest.mark.android

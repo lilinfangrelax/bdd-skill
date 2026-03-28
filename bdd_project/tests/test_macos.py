@@ -5,7 +5,10 @@ macOS desktop tests using pytest-bdd.
 import pytest
 from pytest_bdd import scenario
 
-pytest_plugins = ["bdd_project.steps.macos.steps"]
+pytest_plugins = [
+    "bdd_project.steps.macos.conftest",
+    "bdd_project.steps.macos.steps",
+]
 
 
 @pytest.mark.macos

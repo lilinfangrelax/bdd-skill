@@ -1,19 +1,19 @@
 from pytest_bdd import given, parsers, then, when
 
 
-@given("终端应用已启动")
-def tui_app_started(terminal_session):
+@given("应用已启动")
+def app_started(terminal_session):
     """TUI application is started."""
     pass
 
 
-@when(parsers.parse('输入命令 "{command}"'))
-def type_command(terminal_session, command: str):
-    """Type a command in terminal."""
+@when(parsers.parse('用户创建任务 "{task_name}"'))
+def create_task(terminal_session, task_name: str):
+    """Create a task in TUI app."""
     pass
 
 
-@then(parsers.parse('输出包含 "{text}"'))
-def check_output_contains(terminal_session, text: str):
-    """Verify terminal output contains expected text."""
+@then("任务创建成功")
+def task_created_successfully(terminal_session):
+    """Verify task was created successfully."""
     pass

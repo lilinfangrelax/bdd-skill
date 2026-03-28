@@ -5,7 +5,10 @@ iOS/iPhone mobile tests using pytest-bdd.
 import pytest
 from pytest_bdd import scenario
 
-pytest_plugins = ["bdd_project.steps.iphone.steps"]
+pytest_plugins = [
+    "bdd_project.steps.iphone.conftest",
+    "bdd_project.steps.iphone.steps",
+]
 
 
 @pytest.mark.iphone
