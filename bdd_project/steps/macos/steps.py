@@ -1,3 +1,5 @@
+"""macOS 桌面步骤定义（占位，待接入自动化）。"""
+
 from pytest_bdd import given, parsers, then, when
 
 

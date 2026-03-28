@@ -1,3 +1,5 @@
+"""API 层步骤定义（占位，待接入真实接口）。"""
+
 from pytest_bdd import given, parsers, then, when
 
 

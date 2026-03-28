@@ -4,7 +4,7 @@ import requests
 
 @pytest.fixture
 def api_client():
-    """API client fixture for HTTP requests."""
+    """HTTP 请求用的 API 客户端 fixture。"""
     session = requests.Session()
     yield session
     session.close()
@@ -12,5 +12,5 @@ def api_client():
 
 @pytest.fixture
 def api_base_url():
-    """Base URL for API tests."""
+    """API 测试的基础 URL。"""
     return "http://localhost:8080/api"

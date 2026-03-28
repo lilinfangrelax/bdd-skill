@@ -1,8 +1,1 @@
-import pytest
-
-
-# Common fixtures can be defined here
-@pytest.fixture
-def common_setup():
-    """Common setup fixture for all tests."""
-    return {}
+# 公共 pytest fixture 可在此定义

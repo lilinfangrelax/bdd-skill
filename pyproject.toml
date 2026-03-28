@@ -36,3 +36,20 @@ target-version = "py310"
 [tool.black]
 line-length = 100
 target-version = ["py310"]
+
+[tool.pytest.ini_options]
+testpaths = ["bdd_project/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+markers = [
+    "api: API 测试",
+    "web: Web UI 测试",
+    "windows: Windows 桌面测试",
+    "macos: macOS 桌面测试",
+    "android: Android 移动端测试",
+    "iphone: iOS 移动端测试",
+    "tui: 终端界面测试",
+    "linux: Linux 桌面测试",
+]
