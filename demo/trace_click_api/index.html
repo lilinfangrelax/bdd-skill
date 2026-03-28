@@ -13,8 +13,17 @@
     legend { padding: 0 0.35rem; }
     label { display: block; font-size: 0.85rem; margin-top: 0.65rem; }
     label:first-of-type { margin-top: 0; }
-    input[type="text"], input[type="datetime-local"], textarea, select {
+    input[type="text"], input[type="date"], textarea, select {
       width: 100%; max-width: 100%; box-sizing: border-box; margin-top: 0.2rem; padding: 0.35rem 0.5rem;
+    }
+    .date-wrap {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: stretch; margin-top: 0.2rem;
+    }
+    .date-wrap input[type="text"] {
+      flex: 1 1 10rem; min-width: 0; margin-top: 0;
+    }
+    .date-wrap input[type="date"] {
+      flex: 0 0 auto; width: auto; min-width: 10.5rem; max-width: 100%; margin-top: 0;
     }
     textarea { min-height: 4rem; resize: vertical; }
     .row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; }
@@ -41,8 +50,18 @@
       <input type="hidden" id="edit-id" value="" />
       <label>任务名称 <input type="text" id="name" required placeholder="必填" /></label>
       <div class="row">
-        <label>开始时间 <input type="datetime-local" id="start_time" /></label>
-        <label>完成时间 <input type="datetime-local" id="end_time" /></label>
+        <label>开始日期
+          <span class="date-wrap">
+            <input type="text" id="start_time_text" placeholder="可输入或粘贴，如 2026-03-28 或 2026/3/28" autocomplete="off" />
+            <input type="date" id="start_time_picker" title="日历选择" />
+          </span>
+        </label>
+        <label>完成日期
+          <span class="date-wrap">
+            <input type="text" id="end_time_text" placeholder="可输入或粘贴，如 2026-12-31" autocomplete="off" />
+            <input type="date" id="end_time_picker" title="日历选择" />
+          </span>
+        </label>
       </div>
       <label>优先级
         <select id="priority">
@@ -84,11 +103,51 @@
       return str.split(",").map((s) => s.trim()).filter(Boolean);
     }
 
+    /** 从常见日期字符串解析为 YYYY-MM-DD，失败返回 null（支持粘贴带时间的 ISO 串） */
+    function parseDateToISO(raw) {
+      const s = String(raw).trim();
+      if (!s) return null;
+      const head = s.length >= 10 ? s.slice(0, 10) : s;
+      const m = head.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      if (!m) return null;
+      const y = Number(m[1]);
+      const mo = Number(m[2]);
+      const d = Number(m[3]);
+      if (y < 1000 || y > 9999 || mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+      const dt = new Date(y, mo - 1, d);
+      if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return null;
+      return y + "-" + String(mo).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+    }
+
+    /** 文本框与 date 选择器双向同步：picker 变更时写入标准日期到文本框 */
+    function wireDatePair(textId, pickerId) {
+      const textEl = $(textId);
+      const pickerEl = $(pickerId);
+      const syncPickerFromText = () => {
+        const iso = parseDateToISO(textEl.value);
+        pickerEl.value = iso || "";
+      };
+      pickerEl.addEventListener("change", () => {
+        textEl.value = pickerEl.value || "";
+      });
+      textEl.addEventListener("input", syncPickerFromText);
+      textEl.addEventListener("blur", syncPickerFromText);
+    }
+
+    function setDateFields(startRaw, endRaw) {
+      const st = String(startRaw || "").trim();
+      const et = String(endRaw || "").trim();
+      $("start_time_text").value = st === "—" ? "" : st;
+      $("end_time_text").value = et === "—" ? "" : et;
+      $("start_time_picker").value = parseDateToISO($("start_time_text").value) || "";
+      $("end_time_picker").value = parseDateToISO($("end_time_text").value) || "";
+    }
+
     function payloadFromForm() {
       return {
         name: $("name").value.trim(),
-        start_time: $("start_time").value,
-        end_time: $("end_time").value,
+        start_time: $("start_time_text").value.trim(),
+        end_time: $("end_time_text").value.trim(),
         priority: $("priority").value,
         description: $("description").value.trim(),
         tags: parseTags($("tags").value),
@@ -120,7 +179,7 @@
       if (!tasks.length) {
         return "<p class=\"muted\">（暂无）</p>";
       }
-      const head = "<tr><th>名称</th><th>时间</th><th>优先级</th><th>描述</th><th>标签</th><th class=\"actions\">操作</th></tr>";
+      const head = "<tr><th>名称</th><th>日期</th><th>优先级</th><th>描述</th><th>标签</th><th class=\"actions\">操作</th></tr>";
       const rows = tasks.map((t) => {
         const time = (t.start_time || "—") + " → " + (t.end_time || "—");
         const tagHtml = (t.tags && t.tags.length) ? t.tags.map((x) => "<span class=\"tags\">" + escapeHtml(x) + "</span>").join(" ") : "—";
@@ -162,8 +221,11 @@
               $("edit-id").value = id;
               $("name").value = cells[0].textContent.trim();
               const timeParts = (cells[1].textContent || "").split("→").map((x) => x.trim());
-              $("start_time").value = timeParts[0] && timeParts[0] !== "—" ? timeParts[0].replace(" ", "T").slice(0, 16) : "";
-              $("end_time").value = timeParts[1] && timeParts[1] !== "—" ? timeParts[1].replace(" ", "T").slice(0, 16) : "";
+              const s0 = timeParts[0] && timeParts[0] !== "—" ? timeParts[0] : "";
+              const s1 = timeParts[1] && timeParts[1] !== "—" ? timeParts[1] : "";
+              const iso0 = parseDateToISO(s0);
+              const iso1 = parseDateToISO(s1);
+              setDateFields(iso0 || s0, iso1 || s1);
               $("priority").value = cells[2].textContent.trim() || "中";
               $("description").value = cells[3].textContent.trim() === "—" ? "" : cells[3].textContent.trim();
               const tagSpans = cells[4].querySelectorAll(".tags");
@@ -229,6 +291,9 @@
         showStatus("错误: " + e.message, true);
       }
     });
+
+    wireDatePair("start_time_text", "start_time_picker");
+    wireDatePair("end_time_text", "end_time_picker");
 
     refresh().catch((e) => showStatus("加载列表失败: " + e.message, true));
   </script>

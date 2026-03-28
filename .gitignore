@@ -209,6 +209,9 @@ __marimo__/
 # Claude Code
 .claude/
 
+# Playwright trace 等本地生成的大文件（演示页录制回放用）
+demo/trace_click_api/traces/
+
 # OS generated files
 .DS_Store
 Thumbs.db
