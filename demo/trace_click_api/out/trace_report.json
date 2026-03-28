@@ -1,0 +1,390 @@
+{
+  "meta": {
+    "zip_path": "D:\\Dev\\Zed\\bdd-skill\\demo\\trace_click_api\\traces\\task_trace.zip",
+    "trace_entry": "trace.trace",
+    "network_entry": "trace.network"
+  },
+  "diagnostics": [],
+  "actions": [
+    {
+      "index": 0,
+      "call_id": "call@9",
+      "api_name": "Frame.goto",
+      "method": "goto",
+      "params": {
+        "url": "http://127.0.0.1:8765/",
+        "timeout": 30000
+      },
+      "start_time": 804.31,
+      "end_time": 857.224,
+      "window": {
+        "lower": 804.31,
+        "upper": 861.994
+      },
+      "matched_requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8765/api/tasks",
+          "status": 200,
+          "start_time": 817.258,
+          "reason": "in_window",
+          "network_index": 0,
+          "source": "resource-snapshot"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "call_id": "call@11",
+      "api_name": "Frame.click",
+      "method": "click",
+      "params": {
+        "selector": "internal:role=textbox[name=\"任务名称\"i]",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 861.994,
+      "end_time": 901.554,
+      "window": {
+        "lower": 861.994,
+        "upper": 905.196
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 2,
+      "call_id": "call@13",
+      "api_name": "Frame.fill",
+      "method": "fill",
+      "params": {
+        "selector": "internal:role=textbox[name=\"任务名称\"i]",
+        "value": "新增任务xxx",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 905.196,
+      "end_time": 912.547,
+      "window": {
+        "lower": 905.196,
+        "upper": 916.056
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 3,
+      "call_id": "call@15",
+      "api_name": "Frame.click",
+      "method": "click",
+      "params": {
+        "selector": "internal:role=textbox[name=\"开始日期\"i]",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 916.056,
+      "end_time": 1072.649,
+      "window": {
+        "lower": 916.056,
+        "upper": 1077.026
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 4,
+      "call_id": "call@17",
+      "api_name": "Frame.fill",
+      "method": "fill",
+      "params": {
+        "selector": "internal:role=textbox[name=\"开始日期\"i]",
+        "value": "2025-01-01",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1077.026,
+      "end_time": 1084.089,
+      "window": {
+        "lower": 1077.026,
+        "upper": 1088.011
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 5,
+      "call_id": "call@19",
+      "api_name": "Frame.click",
+      "method": "click",
+      "params": {
+        "selector": "internal:role=textbox[name=\"完成日期\"i]",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1088.011,
+      "end_time": 1125.783,
+      "window": {
+        "lower": 1088.011,
+        "upper": 1128.766
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 6,
+      "call_id": "call@21",
+      "api_name": "Frame.fill",
+      "method": "fill",
+      "params": {
+        "selector": "internal:role=textbox[name=\"完成日期\"i]",
+        "value": "2026-03-03",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1128.766,
+      "end_time": 1134.801,
+      "window": {
+        "lower": 1128.766,
+        "upper": 1138.494
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 7,
+      "call_id": "call@23",
+      "api_name": "Frame.selectOption",
+      "method": "selectOption",
+      "params": {
+        "selector": "internal:label=\"\\u4f18\\u5148\\u7ea7 \\u9ad8 \\u4e2d \\u4f4e\"i",
+        "strict": true,
+        "options": [
+          {
+            "valueOrLabel": "高"
+          }
+        ],
+        "timeout": 30000
+      },
+      "start_time": 1138.494,
+      "end_time": 1143.64,
+      "window": {
+        "lower": 1138.494,
+        "upper": 1148.633
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 8,
+      "call_id": "call@25",
+      "api_name": "Frame.click",
+      "method": "click",
+      "params": {
+        "selector": "internal:role=textbox[name=\"描述\"i]",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1148.633,
+      "end_time": 1177.268,
+      "window": {
+        "lower": 1148.633,
+        "upper": 1180.183
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 9,
+      "call_id": "call@27",
+      "api_name": "Frame.fill",
+      "method": "fill",
+      "params": {
+        "selector": "internal:role=textbox[name=\"描述\"i]",
+        "value": "任务描述",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1180.183,
+      "end_time": 1184.711,
+      "window": {
+        "lower": 1180.183,
+        "upper": 1187.43
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 10,
+      "call_id": "call@29",
+      "api_name": "Frame.click",
+      "method": "click",
+      "params": {
+        "selector": "internal:role=button[name=\"新增任务（POST /api/tasks/create）\"i]",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1187.43,
+      "end_time": 1217.712,
+      "window": {
+        "lower": 1187.43,
+        "upper": 1219.949
+      },
+      "matched_requests": [
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:8765/api/tasks/create",
+          "status": 201,
+          "start_time": 1216.969,
+          "reason": "in_window",
+          "network_index": 1,
+          "source": "resource-snapshot"
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "call_id": "call@31",
+      "api_name": "Frame.click",
+      "method": "click",
+      "params": {
+        "selector": "internal:role=button[name=\"编辑\"i]",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1219.949,
+      "end_time": 1275.9,
+      "window": {
+        "lower": 1219.949,
+        "upper": 1278.504
+      },
+      "matched_requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8765/api/tasks",
+          "status": 200,
+          "start_time": 1227.117,
+          "reason": "in_window",
+          "network_index": 2,
+          "source": "resource-snapshot"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "call_id": "call@33",
+      "api_name": "Frame.fill",
+      "method": "fill",
+      "params": {
+        "selector": "internal:role=textbox[name=\"任务名称\"i]",
+        "value": "新增任务xxx-修改任务",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1278.504,
+      "end_time": 1285.84,
+      "window": {
+        "lower": 1278.504,
+        "upper": 1288.653
+      },
+      "matched_requests": []
+    },
+    {
+      "index": 13,
+      "call_id": "call@35",
+      "api_name": "Frame.click",
+      "method": "click",
+      "params": {
+        "selector": "internal:role=button[name=\"保存修改（POST /api/tasks/update）\"i]",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1288.653,
+      "end_time": 1310.767,
+      "window": {
+        "lower": 1288.653,
+        "upper": 1313.238
+      },
+      "matched_requests": [
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:8765/api/tasks/update",
+          "status": 200,
+          "start_time": 1310.116,
+          "reason": "in_window",
+          "network_index": 3,
+          "source": "resource-snapshot"
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "call_id": "call@37",
+      "api_name": "Frame.click",
+      "method": "click",
+      "params": {
+        "selector": "internal:role=button[name=\"假删除\"i]",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1313.238,
+      "end_time": 1391.151,
+      "window": {
+        "lower": 1313.238,
+        "upper": 1393.442
+      },
+      "matched_requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8765/api/tasks",
+          "status": 200,
+          "start_time": 1320.728,
+          "reason": "in_window",
+          "network_index": 4,
+          "source": "resource-snapshot"
+        },
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:8765/api/tasks/delete",
+          "status": 200,
+          "start_time": 1390.624,
+          "reason": "in_window",
+          "network_index": 5,
+          "source": "resource-snapshot"
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "call_id": "call@39",
+      "api_name": "Frame.click",
+      "method": "click",
+      "params": {
+        "selector": "internal:role=cell[name=\"永久删除\"i]",
+        "strict": true,
+        "timeout": 30000
+      },
+      "start_time": 1393.442,
+      "end_time": 1443.98,
+      "window": {
+        "lower": 1393.442,
+        "upper": 2943.98
+      },
+      "matched_requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8765/api/tasks",
+          "status": 200,
+          "start_time": 1400.489,
+          "reason": "in_window",
+          "network_index": 6,
+          "source": "resource-snapshot"
+        },
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:8765/api/tasks/purge",
+          "status": -1,
+          "start_time": 1443.484,
+          "reason": "in_window",
+          "network_index": 7,
+          "source": "resource-snapshot"
+        }
+      ]
+    }
+  ],
+  "orphan_requests": [],
+  "params": {
+    "lookahead_ms": 1500.0,
+    "use_next_action_cap": true
+  }
+}
