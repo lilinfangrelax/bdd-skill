@@ -3,32 +3,234 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>点击触发接口演示</title>
+  <title>任务 API 演示（POST 增删改）</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 36rem; margin: 2rem auto; padding: 0 1rem; }
-    button { padding: 0.5rem 1rem; cursor: pointer; }
-    #out { margin-top: 1rem; white-space: pre-wrap; word-break: break-all; }
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; max-width: 48rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+    h1 { font-size: 1.35rem; }
+    h2 { font-size: 1.05rem; margin-top: 1.75rem; }
+    fieldset { border: 1px solid #8884; border-radius: 8px; padding: 1rem; margin: 0; }
+    legend { padding: 0 0.35rem; }
+    label { display: block; font-size: 0.85rem; margin-top: 0.65rem; }
+    label:first-of-type { margin-top: 0; }
+    input[type="text"], input[type="datetime-local"], textarea, select {
+      width: 100%; max-width: 100%; box-sizing: border-box; margin-top: 0.2rem; padding: 0.35rem 0.5rem;
+    }
+    textarea { min-height: 4rem; resize: vertical; }
+    .row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; }
+    .row > * { flex: 1 1 12rem; }
+    button { padding: 0.45rem 0.85rem; cursor: pointer; }
+    .muted { color: #666; font-size: 0.88rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 0.5rem; }
+    th, td { border: 1px solid #8884; padding: 0.4rem 0.5rem; text-align: left; vertical-align: top; }
+    th { background: #8882; }
+    .tags { font-size: 0.82rem; }
+    .actions { white-space: nowrap; }
+    #status { margin-top: 0.75rem; padding: 0.5rem; border-radius: 6px; background: #8882; font-size: 0.85rem; white-space: pre-wrap; word-break: break-word; }
+    .hint { margin: 0.5rem 0 0; }
   </style>
 </head>
 <body>
-  <h1>点击触发接口演示</h1>
-  <p>点击下方按钮会通过 <code>fetch</code> 请求同源接口 <code>/api/ping</code>。可在浏览器开发者工具 Network 或 Playwright Trace 中查看。</p>
-  <p>
-    <button type="button" id="btn">请求 /api/ping</button>
-  </p>
-  <div id="out"></div>
+  <h1>任务 API 演示</h1>
+  <p class="muted">所有接口均为同源 <code>fetch</code>：<strong>POST</strong> 创建 / 修改 / 假删除 / 永久删除；列表为 <strong>GET</strong> <code>/api/tasks</code>。可在开发者工具 Network 或 Playwright Trace 中查看。</p>
+
+  <h2 id="form-title">新建任务</h2>
+  <form id="task-form" autocomplete="off">
+    <fieldset>
+      <legend>任务字段</legend>
+      <input type="hidden" id="edit-id" value="" />
+      <label>任务名称 <input type="text" id="name" required placeholder="必填" /></label>
+      <div class="row">
+        <label>开始时间 <input type="datetime-local" id="start_time" /></label>
+        <label>完成时间 <input type="datetime-local" id="end_time" /></label>
+      </div>
+      <label>优先级
+        <select id="priority">
+          <option value="高">高</option>
+          <option value="中" selected>中</option>
+          <option value="低">低</option>
+        </select>
+      </label>
+      <label>描述 <textarea id="description" placeholder="可选"></textarea></label>
+      <label>标签 <input type="text" id="tags" placeholder="多个用英文逗号分隔，如：前端,测试" /></label>
+      <div class="row" style="margin-top: 1rem;">
+        <button type="submit" id="submit-btn">新增任务（POST /api/tasks/create）</button>
+        <button type="button" id="cancel-edit" hidden>取消编辑</button>
+      </div>
+    </fieldset>
+  </form>
+
+  <h2>未删除的任务</h2>
+  <p class="muted hint">假删除：<code>POST /api/tasks/delete</code> · 编辑：<code>POST /api/tasks/update</code></p>
+  <div id="active-wrap"></div>
+
+  <h2>已假删除的任务</h2>
+  <p class="muted hint">永久删除：<code>POST /api/tasks/purge</code>（仅允许删除已处于假删除状态的任务）</p>
+  <div id="deleted-wrap"></div>
+
+  <div id="status" hidden></div>
+
   <script>
-    const out = document.getElementById("out");
-    document.getElementById("btn").addEventListener("click", async () => {
-      out.textContent = "请求中…";
+    const $ = (id) => document.getElementById(id);
+    const statusEl = $("status");
+
+    function showStatus(text, isErr) {
+      statusEl.hidden = false;
+      statusEl.textContent = text;
+      statusEl.style.background = isErr ? "#f005" : "#8882";
+    }
+
+    function parseTags(str) {
+      return str.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+
+    function payloadFromForm() {
+      return {
+        name: $("name").value.trim(),
+        start_time: $("start_time").value,
+        end_time: $("end_time").value,
+        priority: $("priority").value,
+        description: $("description").value.trim(),
+        tags: parseTags($("tags").value),
+      };
+    }
+
+    async function api(method, path, body) {
+      const opt = { method, headers: { Accept: "application/json" } };
+      if (body !== undefined) {
+        opt.headers["Content-Type"] = "application/json";
+        opt.body = JSON.stringify(body);
+      }
+      const r = await fetch(path, opt);
+      const text = await r.text();
+      let data;
       try {
-        const r = await fetch("/api/ping", { headers: { Accept: "application/json" } });
-        const text = await r.text();
-        out.textContent = "HTTP " + r.status + "\n" + text;
+        data = JSON.parse(text);
+      } catch {
+        data = { raw: text };
+      }
+      if (!r.ok) {
+        const msg = data.error || data.message || text || r.status;
+        throw new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
+      }
+      return data;
+    }
+
+    function renderTable(tasks, { onEdit, onSoft, onPurge, showPurge }) {
+      if (!tasks.length) {
+        return "<p class=\"muted\">（暂无）</p>";
+      }
+      const head = "<tr><th>名称</th><th>时间</th><th>优先级</th><th>描述</th><th>标签</th><th class=\"actions\">操作</th></tr>";
+      const rows = tasks.map((t) => {
+        const time = (t.start_time || "—") + " → " + (t.end_time || "—");
+        const tagHtml = (t.tags && t.tags.length) ? t.tags.map((x) => "<span class=\"tags\">" + escapeHtml(x) + "</span>").join(" ") : "—";
+        let actions = "";
+        if (onEdit) actions += "<button type=\"button\" data-act=\"edit\" data-id=\"" + escapeAttr(t.id) + "\">编辑</button> ";
+        if (onSoft) actions += "<button type=\"button\" data-act=\"soft\" data-id=\"" + escapeAttr(t.id) + "\">假删除</button>";
+        if (showPurge && onPurge) actions += "<button type=\"button\" data-act=\"purge\" data-id=\"" + escapeAttr(t.id) + "\">永久删除</button>";
+        return "<tr><td>" + escapeHtml(t.name) + "</td><td>" + escapeHtml(time) + "</td><td>" + escapeHtml(t.priority) + "</td><td>" + escapeHtml(t.description || "—") + "</td><td>" + tagHtml + "</td><td class=\"actions\">" + actions + "</td></tr>";
+      }).join("");
+      return "<table><thead>" + head + "</thead><tbody>" + rows + "</tbody></table>";
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+    function escapeAttr(s) {
+      return String(s).replace(/"/g, "&quot;");
+    }
+
+    async function refresh() {
+      const data = await api("GET", "/api/tasks");
+      $("active-wrap").innerHTML = renderTable(data.active || [], { onEdit: true, onSoft: true, showPurge: false });
+      $("deleted-wrap").innerHTML = renderTable(data.soft_deleted || [], { onEdit: false, onSoft: false, onPurge: true, showPurge: true });
+      bindTableClicks($("active-wrap"), { edit: true, soft: true });
+      bindTableClicks($("deleted-wrap"), { purge: true });
+    }
+
+    function bindTableClicks(root, flags) {
+      root.querySelectorAll("button[data-act]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const id = btn.getAttribute("data-id");
+          const act = btn.getAttribute("data-act");
+          try {
+            if (flags.edit && act === "edit") {
+              const tr = btn.closest("tr");
+              const table = tr && tr.closest("table");
+              if (!table) return;
+              const cells = tr.querySelectorAll("td");
+              $("edit-id").value = id;
+              $("name").value = cells[0].textContent.trim();
+              const timeParts = (cells[1].textContent || "").split("→").map((x) => x.trim());
+              $("start_time").value = timeParts[0] && timeParts[0] !== "—" ? timeParts[0].replace(" ", "T").slice(0, 16) : "";
+              $("end_time").value = timeParts[1] && timeParts[1] !== "—" ? timeParts[1].replace(" ", "T").slice(0, 16) : "";
+              $("priority").value = cells[2].textContent.trim() || "中";
+              $("description").value = cells[3].textContent.trim() === "—" ? "" : cells[3].textContent.trim();
+              const tagSpans = cells[4].querySelectorAll(".tags");
+              $("tags").value = tagSpans.length ? Array.from(tagSpans).map((n) => n.textContent).join(",") : "";
+              $("form-title").textContent = "修改任务";
+              $("submit-btn").textContent = "保存修改（POST /api/tasks/update）";
+              $("cancel-edit").hidden = false;
+              $("name").focus();
+              showStatus("已载入任务 " + id + " 到表单，修改后点击保存。", false);
+              return;
+            }
+            if (flags.soft && act === "soft") {
+              await api("POST", "/api/tasks/delete", { id });
+              showStatus("已假删除: " + id, false);
+            }
+            if (flags.purge && act === "purge") {
+              await api("POST", "/api/tasks/purge", { id });
+              showStatus("已永久删除: " + id, false);
+            }
+            await refresh();
+          } catch (e) {
+            showStatus("错误: " + e.message, true);
+          }
+        });
+      });
+    }
+
+    function resetForm() {
+      $("edit-id").value = "";
+      $("task-form").reset();
+      $("priority").value = "中";
+      $("form-title").textContent = "新建任务";
+      $("submit-btn").textContent = "新增任务（POST /api/tasks/create）";
+      $("cancel-edit").hidden = true;
+    }
+
+    $("cancel-edit").addEventListener("click", () => {
+      resetForm();
+      showStatus("已取消编辑。", false);
+    });
+
+    $("task-form").addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const editId = $("edit-id").value.trim();
+      const base = payloadFromForm();
+      try {
+        if (!base.name) {
+          showStatus("请填写任务名称。", true);
+          return;
+        }
+        if (editId) {
+          const body = Object.assign({ id: editId }, base);
+          await api("POST", "/api/tasks/update", body);
+          showStatus("已更新任务 " + editId, false);
+          resetForm();
+        } else {
+          await api("POST", "/api/tasks/create", base);
+          showStatus("已创建任务。", false);
+          resetForm();
+        }
+        await refresh();
       } catch (e) {
-        out.textContent = "失败: " + e;
+        showStatus("错误: " + e.message, true);
       }
     });
+
+    refresh().catch((e) => showStatus("加载列表失败: " + e.message, true));
   </script>
 </body>
 </html>
