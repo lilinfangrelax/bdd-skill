@@ -10,9 +10,3 @@ def page():
         page = browser.new_page()
         yield page
         browser.close()
-
-
-@pytest.fixture
-def base_url():
-    """Base URL for web tests."""
-    return "https://example.com"
