@@ -1,7 +1,7 @@
 from pytest_bdd import given, parsers, then, when
 
 
-@given("应用已启动")
+@given("用户在 TodoMVC 首页")
 def app_started(android_driver):
     """Android application is started."""
     pass
@@ -13,7 +13,7 @@ def create_task(android_driver, task_name: str):
     pass
 
 
-@then("任务创建成功")
-def task_created_successfully(android_driver):
+@then(parsers.parse('页面显示任务 "{task_name}"'))
+def task_created_successfully(android_driver, task_name: str):
     """Verify task was created successfully."""
     pass

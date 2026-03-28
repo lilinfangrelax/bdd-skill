@@ -1,6 +1,4 @@
-"""
-Android mobile tests using pytest-bdd.
-"""
+"""Android mobile tests using pytest-bdd."""
 
 import pytest
 from pytest_bdd import scenario

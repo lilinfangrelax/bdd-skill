@@ -1,6 +1,4 @@
-"""
-macOS desktop tests using pytest-bdd.
-"""
+"""macos tests using pytest-bdd."""
 
 import pytest
 from pytest_bdd import scenario
@@ -14,5 +12,4 @@ pytest_plugins = [
 @pytest.mark.macos
 @scenario("../features/task.feature", "用户创建任务")
 def test_macos_scenario():
-    """Run macOS desktop scenario."""
     pass
