@@ -1,6 +1,6 @@
 # API 自动化步骤
 
-## Step 2：新增任务
+## 新增任务
 
 **POST** `http://127.0.0.1:8765/api/tasks/create`
 
@@ -39,7 +39,7 @@
 
 ---
 
-## Step 3：编辑任务
+## 编辑任务
 
 **POST** `http://127.0.0.1:8765/api/tasks/update`
 
@@ -79,7 +79,7 @@
 
 ---
 
-## Step 4：假删除任务
+## 假删除任务
 
 **POST** `http://127.0.0.1:8765/api/tasks/delete`
 
@@ -114,7 +114,7 @@
 
 ---
 
-## Step 5：永久删除任务
+## 永久删除任务
 
 **POST** `http://127.0.0.1:8765/api/tasks/purge`
 

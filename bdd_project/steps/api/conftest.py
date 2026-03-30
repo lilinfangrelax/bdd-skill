@@ -12,5 +12,5 @@ def api_client():
 
 @pytest.fixture
 def api_base_url():
-    """API 测试的基础 URL。"""
-    return "http://localhost:8080/api"
+    """API 测试的基础 URL（仅 origin；与 fixture 中 path 如 /api/tasks/... 拼接）。"""
+    return "http://localhost:8765"

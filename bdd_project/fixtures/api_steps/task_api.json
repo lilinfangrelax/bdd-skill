@@ -1,0 +1,109 @@
+{
+  "version": 2,
+  "steps": [
+    {
+      "step_label": "新增任务",
+      "method": "POST",
+      "url": "http://127.0.0.1:8765/api/tasks/create",
+      "path": "/api/tasks/create",
+      "request_body_template": {
+        "name": "新增任务xxx",
+        "start_time": "2025-01-01",
+        "end_time": "2026-03-03",
+        "priority": "高",
+        "description": "任务描述",
+        "tags": []
+      },
+      "response_body_template": {
+        "ok": true,
+        "task": {
+          "id": "{{ctx.task_id}}",
+          "name": "新增任务xxx",
+          "start_time": "2025-01-01",
+          "end_time": "2026-03-03",
+          "priority": "高",
+          "description": "任务描述",
+          "tags": [],
+          "deleted": false
+        }
+      },
+      "expect_fail": false,
+      "ctx_extract_var": "task_id",
+      "status_expected": 201
+    },
+    {
+      "step_label": "编辑任务",
+      "method": "POST",
+      "url": "http://127.0.0.1:8765/api/tasks/update",
+      "path": "/api/tasks/update",
+      "request_body_template": {
+        "id": "{{ctx.task_id}}",
+        "name": "新增任务xxx-修改任务",
+        "start_time": "2025-01-01",
+        "end_time": "2026-03-03",
+        "priority": "高",
+        "description": "任务描述",
+        "tags": []
+      },
+      "response_body_template": {
+        "ok": true,
+        "task": {
+          "id": "{{ctx.task_id}}",
+          "name": "新增任务xxx-修改任务",
+          "start_time": "2025-01-01",
+          "end_time": "2026-03-03",
+          "priority": "高",
+          "description": "任务描述",
+          "tags": [],
+          "deleted": false
+        }
+      },
+      "expect_fail": false,
+      "ctx_extract_var": null,
+      "status_expected": 200
+    },
+    {
+      "step_label": "假删除任务",
+      "method": "POST",
+      "url": "http://127.0.0.1:8765/api/tasks/delete",
+      "path": "/api/tasks/delete",
+      "request_body_template": {
+        "id": "{{ctx.task_id}}"
+      },
+      "response_body_template": {
+        "ok": true,
+        "message": "已假删除",
+        "task": {
+          "id": "{{ctx.task_id}}",
+          "name": "新增任务xxx-修改任务",
+          "start_time": "2025-01-01",
+          "end_time": "2026-03-03",
+          "priority": "高",
+          "description": "任务描述",
+          "tags": [],
+          "deleted": true
+        }
+      },
+      "expect_fail": false,
+      "ctx_extract_var": null,
+      "status_expected": 200
+    },
+    {
+      "step_label": "永久删除任务",
+      "method": "POST",
+      "url": "http://127.0.0.1:8765/api/tasks/purge",
+      "path": "/api/tasks/purge",
+      "request_body_template": {
+        "id": "{{ctx.task_id}}"
+      },
+      "response_body_template": {
+        "ok": true,
+        "message": "已永久删除",
+        "id": "{{ctx.task_id}}"
+      },
+      "expect_fail": false,
+      "ctx_extract_var": null,
+      "status_expected": 200
+    }
+  ]
+}
