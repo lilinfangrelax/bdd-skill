@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 
 from playwright.sync_api import Playwright, sync_playwright
@@ -34,11 +35,12 @@ def run(playwright: Playwright) -> None:
 
     # 假删除任务
     page.get_by_role("button", name="假删除").click()
-    
+
     # 永久删除任务
     page.get_by_role("cell", name="永久删除").click()
 
     # ---------------------
+    time.sleep(3)
     context.tracing.stop(path=str(trace_zip))
     context.close()
     browser.close()
