@@ -207,7 +207,7 @@ marimo/_lsp/
 __marimo__/
 
 # Claude Code
-.claude/
+.claude/settings*.json
 
 # Playwright trace 等本地生成的大文件（演示页录制回放用）
 demo/trace_click_api/traces/
