@@ -128,21 +128,15 @@ def _fts_safe_term(t: str) -> str:
 
 def build_fts_match_query(query: str) -> str:
     """构造 FTS5 MATCH 子句。"""
+    keywords = [kw.strip() for kw in query.split() if kw.strip()]
+    if len(keywords) > 1:
+        # 多关键词时按用户输入的词做严格 AND，避免被扩展词放宽成“或关系”。
+        safe_keywords = [_fts_safe_term(kw) for kw in keywords if _fts_safe_term(kw)]
+        return " AND ".join([f'"{kw}"' for kw in safe_keywords]) if safe_keywords else ""
     search_terms = prepare_chinese_search_terms(query)
     search_terms = [_fts_safe_term(x) for x in search_terms if _fts_safe_term(x)]
     if not search_terms:
         return ""
-    keywords = [kw.strip() for kw in query.split() if kw.strip()]
-    if len(keywords) > 1:
-        keyword_queries = []
-        for keyword in keywords:
-            kterms = prepare_chinese_search_terms(keyword)
-            kterms = [_fts_safe_term(x) for x in kterms if _fts_safe_term(x)]
-            if not kterms:
-                continue
-            inner = " OR ".join([f'"{t}"' for t in kterms])
-            keyword_queries.append(f"({inner})")
-        return " AND ".join(keyword_queries) if keyword_queries else ""
     return " OR ".join([f'"{t}"' for t in search_terms])
 
 
@@ -190,6 +184,7 @@ def search_testcases(
             fts_results = []
 
     seen: set[str] = set()
+    keywords = [kw.strip() for kw in q.split() if kw.strip()]
     search_terms = prepare_chinese_search_terms(q)
 
     def row_to_dict(row: sqlite3.Row, from_fts: bool) -> dict[str, Any]:
@@ -227,13 +222,15 @@ def search_testcases(
     if len(results) < like_fallback_threshold and search_terms:
         like_parts = []
         params: list[str] = []
-        for term in search_terms:
+        # 多关键词时与 MATCH 保持一致：每个关键词都必须命中（AND）。
+        like_terms = keywords if len(keywords) > 1 else search_terms
+        for term in like_terms:
             pat = f"%{term}%"
             like_parts.append(
                 "(title LIKE ? OR section LIKE ? OR body LIKE ?)"
             )
             params.extend([pat, pat, pat])
-        like_sql = " OR ".join(like_parts)
+        like_sql = " AND ".join(like_parts) if len(keywords) > 1 else " OR ".join(like_parts)
         cur.execute(
             f"""
             SELECT uuid, title, section, body, file_path, start_line, end_line,
