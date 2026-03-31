@@ -61,11 +61,21 @@ def main() -> int:
     )
     parser.add_argument("--max-section-chars", type=int, default=32000)
     parser.add_argument("--chunk-lines", type=int, default=120)
-    parser.add_argument("--probe-max-lines", type=int, default=800)
     parser.add_argument(
         "--split-on-hr",
         action="store_true",
         help="在单独一行的 --- 处尝试切段（可能误切，按需开启）",
+    )
+    parser.add_argument(
+        "--no-split-blank-lines",
+        action="store_true",
+        help="关闭「连续空行切段」（默认开启：连续空行达到阈值视为一条完整用例结束）",
+    )
+    parser.add_argument(
+        "--min-blank-lines",
+        type=int,
+        default=2,
+        help="连续多少行空行触发切段（默认 2）",
     )
     parser.add_argument(
         "--progress-lines",
@@ -94,10 +104,11 @@ def main() -> int:
         db_path.unlink()
 
     cfg = ParserConfig(
-        probe_max_lines=args.probe_max_lines,
         chunk_lines=args.chunk_lines,
         max_section_chars=args.max_section_chars,
         split_on_horizontal_rule=args.split_on_hr,
+        split_on_consecutive_blank_lines=not args.no_split_blank_lines,
+        min_consecutive_blank_lines=max(2, args.min_blank_lines),
     )
 
     conn = connect(db_path)
@@ -154,8 +165,9 @@ def main() -> int:
             "commit_interval": args.commit_interval,
             "max_section_chars": args.max_section_chars,
             "chunk_lines": cfg.chunk_lines,
-            "probe_max_lines": cfg.probe_max_lines,
             "split_on_horizontal_rule": cfg.split_on_horizontal_rule,
+            "split_on_consecutive_blank_lines": cfg.split_on_consecutive_blank_lines,
+            "min_consecutive_blank_lines": cfg.min_consecutive_blank_lines,
         },
     }
     write_index_meta_json(meta_path, payload)
