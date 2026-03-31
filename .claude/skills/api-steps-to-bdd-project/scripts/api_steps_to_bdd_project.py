@@ -164,8 +164,20 @@ def parse_api_steps_md(md_path: Path) -> list[ParsedStep]:
                     block, i = _read_fenced_block(lines, i)
                     try:
                         req_body = json.loads(block) if block.strip() else None
-                    except json.JSONDecodeError as e:
-                        raise ValueError(f"「{step_label}」Request JSON 无效: {e}") from e
+                    except json.JSONDecodeError:
+                        # 注释行（如 // TODO）不是合法 JSON，去除后重试
+                        stripped = "\n".join(
+                            ln for ln in block.splitlines() if not re.match(r"^\s*//", ln)
+                        ).strip()
+                        if stripped:
+                            try:
+                                req_body = json.loads(stripped)
+                            except json.JSONDecodeError as e2:
+                                raise ValueError(
+                                    f"「{step_label}」Request JSON 无效: {e2}"
+                                ) from e2
+                        else:
+                            req_body = None
                 continue
 
             if lines[i].strip() == "**Response**":

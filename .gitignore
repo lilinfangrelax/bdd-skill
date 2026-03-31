@@ -212,6 +212,9 @@ __marimo__/
 # Playwright trace 等本地生成的大文件（演示页录制回放用）
 demo/trace_click_api/traces/
 
+# 流水线运行产物（含 trace.zip 等大文件）
+runs/
+
 # OS generated files
 .DS_Store
 Thumbs.db
