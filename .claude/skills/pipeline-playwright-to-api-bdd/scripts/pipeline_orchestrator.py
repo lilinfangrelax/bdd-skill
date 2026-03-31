@@ -13,6 +13,7 @@ pipeline_orchestrator.py
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -223,6 +224,15 @@ def _count_checked_items(md_path: Path) -> int:
         return 0
     text = md_path.read_text(encoding="utf-8")
     return len(re.findall(r"^\s*-\s*\[x\]", text, re.MULTILINE))
+
+
+def _sha256_file(path: Path) -> str:
+    """计算文件内容哈希，用于判断人工确认文件是否被修改。"""
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def _resolve_run_dir(state: PipelineState, project_root: Path) -> Path:
@@ -453,6 +463,7 @@ def stage_trace_to_bdd_confirm(state: PipelineState, project_root: Path) -> bool
     checked = _count_checked_items(bdd_md)
     print(f"  ✅ 已生成 bdd_confirmed.md（{checked} 个接口默认勾选）")
     state.set_artifact("bdd_confirmed_md", str(bdd_md))
+    state.set_artifact("bdd_confirmed_md_initial_sha256", _sha256_file(bdd_md))
     state.mark_completed("trace_to_bdd_confirm")
     return True
 
@@ -476,6 +487,17 @@ def stage_human_confirm_required(state: PipelineState, project_root: Path) -> bo
             "文件可能被删除，请从 trace_to_bdd_confirm 阶段重新开始",
         )
         return False
+
+    initial_hash = state.get_artifact("bdd_confirmed_md_initial_sha256")
+    if initial_hash:
+        current_hash = _sha256_file(md_path)
+        if current_hash == initial_hash:
+            state.mark_error(
+                "human_confirm_required",
+                "检测到 bdd_confirmed.md 尚未人工修改",
+                f"请先手工编辑并保存 {md_path}（例如取消不需要的勾选），再执行 continue",
+            )
+            return False
 
     checked = _count_checked_items(md_path)
     if checked == 0:
@@ -643,6 +665,7 @@ def run_pipeline(
             print("=" * 60)
             print(f"\n  请编辑以下文件，勾选需要纳入自动化的接口（取消不需要的）：")
             print(f"  📄 {bdd_md}")
+            print("  ⚠️  注意：必须保存一次人工修改（文件内容变化）后才能继续")
             print(f"\n  完成编辑后，执行以下命令继续：")
             print(f"  {continue_cmd}")
             print()
