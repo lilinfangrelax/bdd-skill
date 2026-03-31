@@ -143,6 +143,13 @@ def _python_exe() -> str:
     return sys.executable
 
 
+def _render_cli_command(script_path: Path, args: list[str]) -> str:
+    """渲染可直接复制的命令，避免相对路径导致命令不可用。"""
+    parts = [f'"{_python_exe()}"', f'"{script_path}"']
+    parts.extend(f'"{a}"' if " " in a else a for a in args)
+    return " ".join(parts)
+
+
 def _run_script(
     script_rel: str,
     args: list[str],
@@ -286,10 +293,16 @@ def stage_validate_recording_script(state: PipelineState, project_root: Path) ->
 
     if result.returncode != 0:
         stderr_brief = result.stderr[:500] if result.stderr else "(无)"
+        suggestion = "请检查目标应用是否已启动、脚本路径是否正确"
+        if "ERR_CONNECTION_REFUSED" in stderr_brief or "ECONNREFUSED" in stderr_brief:
+            suggestion = (
+                "检测到连接被拒绝，请先启动目标服务（例如："
+                ".\\.venv\\Scripts\\python demo/trace_click_api/server.py）"
+            )
         state.mark_error(
             "validate_recording_script",
             f"录制脚本退出码 {result.returncode}\nstderr: {stderr_brief}",
-            "请检查目标应用是否已启动、脚本路径是否正确",
+            suggestion,
         )
         return False
 
@@ -621,16 +634,17 @@ def run_pipeline(
         # 在 start 模式下到达人工确认阶段前暂停
         if stop_before_human and stage == "human_confirm_required":
             bdd_md = state.get_artifact("bdd_confirmed_md")
+            continue_cmd = _render_cli_command(
+                _SCRIPT_DIR / "pipeline_orchestrator.py",
+                ["continue", "--run-dir", str(state.run_dir)],
+            )
             print("\n" + "=" * 60)
             print("  ⏸️  流水线暂停：请人工审阅并勾选接口")
             print("=" * 60)
             print(f"\n  请编辑以下文件，勾选需要纳入自动化的接口（取消不需要的）：")
             print(f"  📄 {bdd_md}")
             print(f"\n  完成编辑后，执行以下命令继续：")
-            print(
-                f'  ..\\.venv\\Scripts\\python "{_SCRIPT_DIR / "pipeline_orchestrator.py"}"'
-                f' continue --run-dir "{state.run_dir}"'
-            )
+            print(f"  {continue_cmd}")
             print()
             return True
 
@@ -643,15 +657,16 @@ def run_pipeline(
 
         if not success:
             err = state.data.get("error") or {}
+            retry_cmd = _render_cli_command(
+                _SCRIPT_DIR / "pipeline_orchestrator.py",
+                ["resume-from", stage, "--run-dir", str(state.run_dir)],
+            )
             print(f"\n  ❌ 阶段 {stage} 失败")
             print(f"  原因: {err.get('message', '未知')}")
             if err.get("suggestion"):
                 print(f"  建议: {err['suggestion']}")
             print(f"\n  修复后可使用以下命令重试：")
-            print(
-                f'  ..\\.venv\\Scripts\\python "{_SCRIPT_DIR / "pipeline_orchestrator.py"}"'
-                f' resume-from {stage} --run-dir "{state.run_dir}"'
-            )
+            print(f"  {retry_cmd}")
             return False
 
     return True
