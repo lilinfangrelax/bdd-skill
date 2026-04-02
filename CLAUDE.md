@@ -6,6 +6,7 @@
 - 激活后再操作（Windows PowerShell）：`.\.venv\Scripts\Activate.ps1`
 - 未激活时可直接调用解释器，例如：`.\.venv\Scripts\python -m pytest`
 - 验证测试时**按单文件或单用例执行即可**，不必每次对 `bdd_project/tests` 做全量 `pytest`；示例：`.\.venv\Scripts\python -m pytest bdd_project/tests/test_web.py -v`
+- API BDD（`bdd_project/tests/test_api.py`）默认请求 `http://localhost:8765`；其它环境可设置环境变量 `API_BASE_URL`。
 
 ## Git 提交规范
 - 提交信息必须使用中文

@@ -33,6 +33,21 @@
     },
     {
       "step_label": "编辑任务",
+      "method": "GET",
+      "url": "http://127.0.0.1:8765/api/tasks",
+      "path": "/api/tasks",
+      "request_body_template": null,
+      "response_body_template": {
+        "ok": true,
+        "active": [],
+        "soft_deleted": []
+      },
+      "expect_fail": false,
+      "ctx_extract_var": null,
+      "status_expected": 200
+    },
+    {
+      "step_label": "编辑任务",
       "method": "POST",
       "url": "http://127.0.0.1:8765/api/tasks/update",
       "path": "/api/tasks/update",

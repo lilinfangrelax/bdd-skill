@@ -5,7 +5,7 @@ from pytest_bdd import scenario
 
 pytest_plugins = [
     "bdd_project.steps.api.conftest",
-    "bdd_project.steps.api.generated_api_steps",
+    "bdd_project.steps.api.task_api_steps",
 ]
 
 

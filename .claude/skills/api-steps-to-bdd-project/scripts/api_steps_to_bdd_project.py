@@ -326,6 +326,8 @@ import pytest
 import requests
 from pytest_bdd import given, parsers, then, when
 
+from bdd_project.core.client import HttpClient
+
 # 相对 bdd_project 包根：steps/api -> bdd_project
 _BDD_ROOT = Path(__file__).resolve().parent.parent.parent
 _FIXTURE_PATH = _BDD_ROOT / "__FIXTURE_REL__"
@@ -390,7 +392,7 @@ def _extract_id_from_response_json(data: dict[str, Any], _var_hint: str) -> str 
 
 
 @pytest.fixture
-def api_ctx() -> dict[str, Any]:
+def context() -> dict[str, Any]:
     """跨 Step 保存动态值（如 task_id）。"""
     return {}
 
@@ -403,31 +405,29 @@ def api_service_ok():
 
 @when(parsers.parse("客户端发送 API 请求「{step_label}」"))
 def api_send_request(
-    api_ctx: dict[str, Any],
-    api_client: requests.Session,
-    api_base_url: str,
+    context: dict[str, Any],
+    http_client: HttpClient,
     step_label: str,
 ):
     step = _step_by_label(step_label)
     method = step["method"].upper()
     path = step["path"]
-    url = api_base_url.rstrip("/") + path
     body = step.get("request_body_template")
-    payload = _substitute_ctx(body, api_ctx) if body is not None else None
+    payload = _substitute_ctx(body, context) if body is not None else None
 
     if method == "GET":
-        resp = api_client.get(url)
+        resp = http_client.get(path)
     elif method == "POST":
-        resp = api_client.post(url, json=payload)
+        resp = http_client.post(path, json=payload)
     elif method == "PUT":
-        resp = api_client.put(url, json=payload)
+        resp = http_client.put(path, json=payload)
     elif method == "DELETE":
-        resp = api_client.delete(url, json=payload)
+        resp = http_client.delete(path, json=payload)
     else:
         raise NotImplementedError(method)
 
-    api_ctx["_last_response"] = resp
-    api_ctx["_last_step"] = step
+    context["_last_response"] = resp
+    context["_last_step"] = step
 
     if not step.get("expect_fail") and step.get("ctx_extract_var") and resp.content:
         try:
@@ -435,15 +435,15 @@ def api_send_request(
             if isinstance(j, dict):
                 vid = _extract_id_from_response_json(j, step["ctx_extract_var"])
                 if vid:
-                    api_ctx[step["ctx_extract_var"]] = vid
+                    context[step["ctx_extract_var"]] = vid
         except Exception:
             pass
 
 
 @then(parsers.parse("API「{step_label}」响应与模板匹配"))
-def api_assert_response(api_ctx: dict[str, Any], step_label: str):
+def api_assert_response(context: dict[str, Any], step_label: str):
     step = _step_by_label(step_label)
-    resp: requests.Response = api_ctx["_last_response"]
+    resp: requests.Response = context["_last_response"]
     expect_fail = step.get("expect_fail", False)
     status_exp = int(step.get("status_expected", 200))
 
@@ -459,7 +459,7 @@ def api_assert_response(api_ctx: dict[str, Any], step_label: str):
     if tmpl is None:
         return
     actual = resp.json()
-    expected = _substitute_ctx(tmpl, api_ctx)
+    expected = _substitute_ctx(tmpl, context)
     assert actual == expected, f"响应体不一致:\n实际: {actual}\n期望: {expected}"
 '''
 

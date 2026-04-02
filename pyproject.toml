@@ -38,6 +38,7 @@ line-length = 100
 target-version = ["py310"]
 
 [tool.pytest.ini_options]
+# API 集成测试默认连 http://localhost:8765；覆盖请设置环境变量 API_BASE_URL
 testpaths = ["bdd_project/tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
