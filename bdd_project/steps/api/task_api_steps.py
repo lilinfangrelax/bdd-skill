@@ -115,6 +115,8 @@ def api_send_request(
     task_api: TaskApi,
     step_label: str,
 ):
+    # 获取步骤：同名 step_label 可能同时包含“查询类”(request_body_template=None)与“写操作”(request_body_template!=None)。
+    # 这里优先使用写操作分支，避免把“编辑”误映射成“查询列表”导致断言失配。
     step = _step_by_label_with_occurrence(context, step_label)
     path = step["path"]
     body_template = step.get("request_body_template")
