@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(.venv/Scripts/python.exe -m pytest bdd_project/tests/test_web.py -v --tb=short --headed --slowmo 200 --collect-only)",
+      "Bash(find D:DevZed -type f -name *.json -o -name *.toml -o -name *.yaml)",
+      "Bash(grep -E '\\\\.\\(json|toml|yaml|yml|conf\\)$')",
+      "Bash(find D:DevZedbdd-skill -name .zed* -o -name *zed*)",
+      "Bash(find D:DevZed -maxdepth 3 -type f \\\\\\(-name *.json -o -name *.toml -o -name *.yaml -o -name *.yml \\\\\\))",
+      "Bash(cd D:/Dev/Zed/bdd-skill && .\\\\.venv\\\\Scripts\\\\python demo/trace_click_api/server.py)",
+      "Bash(..venvScriptspython \".claude/skills/pipeline-playwright-to-api-bdd/scripts/pipeline_orchestrator.py\" start --recording-script \"demo/trace_click_api/recordings/task.py\" --bdd-project \"bdd_project\")",
+      "Bash(./.venv/Scripts/python \".claude/skills/pipeline-playwright-to-api-bdd/scripts/pipeline_orchestrator.py\" start --recording-script \"demo/trace_click_api/recordings/task.py\" --bdd-project \"bdd_project\")",
+      "Bash(curl -s http://127.0.0.1:8765/)",
+      "Bash(D:/Dev/Zed/bdd-skill/.venv/Scripts/python.exe \".claude/skills/pipeline-playwright-to-api-bdd/scripts/pipeline_orchestrator.py\" start --recording-script \"demo/trace_click_api/recordings/task.py\" --bdd-project \"bdd_project\")"
+    ]
+  }
+}
