@@ -22,6 +22,3 @@ def page(browser):
     page = browser.new_page()
     yield page
     page.close()
-
-# Import steps to make them available for pytest-bdd
-from steps import example_steps
