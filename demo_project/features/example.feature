@@ -1,9 +1,9 @@
-Feature: Example Test
-    As a user
-    I want to test the example functionality
-    So that I can verify the BDD setup works correctly
+Feature: 示例测试
+    作为用户
+    我希望测试示例功能
+    以便验证BDD设置是否正常工作
 
-    Scenario: Navigate to example.com
-        Given I open the browser
-        When I navigate to "https://example.com"
-        Then I should see the page title "Example Domain"
+    Scenario: 导航到GitHub
+        Given 我打开浏览器
+        When 我导航到 "https://github.com"
+        Then 我应该看到页面标题 "GitHub · Change is constant. GitHub keeps you ahead. · GitHub"

@@ -9,7 +9,7 @@ pytest_plugins = [
 ]
 
 
-@scenario("../features/example.feature", "Navigate to example.com")
-def test_navigate_to_examplecom():
+@scenario("../features/example.feature", "导航到GitHub")
+def test_navigate_to_github():
     """执行场景。"""
     pass
