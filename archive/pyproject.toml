@@ -1,0 +1,57 @@
+[project]
+name = "bdd-skill"
+version = "0.1.0"
+description = "BDD testing framework with multi-platform support"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+dependencies = [
+    "behave",
+    "gherkin-official>=29.0.0",
+    "playwright>=1.58.0",
+    "pytest>=9.0.2",
+    "pytest-bdd>=8.1.0",
+    "pytest-playwright>=0.7.2",
+    "requests>=2.31.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=24.0.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["bdd_project*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.pytest.ini_options]
+# API 集成测试默认连 http://localhost:8765；覆盖请设置环境变量 API_BASE_URL
+testpaths = ["bdd_project/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+markers = [
+    "api: API 测试",
+    "web: Web UI 测试",
+    "windows: Windows 桌面测试",
+    "macos: macOS 桌面测试",
+    "android: Android 移动端测试",
+    "iphone: iOS 移动端测试",
+    "tui: 终端界面测试",
+    "linux: Linux 桌面测试",
+]
