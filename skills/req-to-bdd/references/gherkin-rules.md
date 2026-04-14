@@ -98,12 +98,44 @@ Scenario: 注册和登录
 # 正确 — 拆分为独立 Scenario
 ```
 
-### 5. 缺少 Sad Path
+### 6. Background 步骤在 Scenario 中重复（高频问题）
 ```gherkin
-# 需求中有"失败"规则时，必须补充：
-Scenario: 密码错误时登录失败
-Scenario: 连续失败5次后账号锁定
+# 错误 — Background 已有 Given，Scenario 又写一遍
+Background:
+  Given 系统处于正常运行状态
+
+Scenario: 密码错误登录失败
+  Given 系统处于正常运行状态      # ← 与 Background 重复！
+  And   手机号 "138..." 已注册
+  When  用户输入错误密码
+  Then  系统提示"账号或密码不正确"
+
+# 正确 — Scenario 中只写 Background 没有覆盖的额外前提
+Scenario: 密码错误登录失败
+  Given 手机号 "138..." 已注册   # ← 只补充 Background 没有的
+  When  用户输入错误密码
+  Then  系统提示"账号或密码不正确"
 ```
+
+### 7. Sad Path 不复用已有步骤（高频问题）
+```gherkin
+# Happy Path 已有步骤：
+#   When  用户输入手机号 "138..." 和正确密码
+#   And   用户点击"登录"按钮
+
+# 错误 — Sad Path 另起炉灶，措辞略有不同
+Scenario: 密码错误登录失败
+  When  用户在登录框中填写手机号和错误的密码    # ← 全新步骤，与已有的语义重复
+  And   用户按下登录                           # ← "按下登录" vs "点击登录" 冗余
+
+# 正确 — 复用 Happy Path 的 When 步骤，只改参数
+Scenario: 密码错误登录失败
+  Given 手机号 "138..." 已注册
+  When  用户输入手机号 "138..." 和错误密码     # ← 复用结构，只换参数
+  And   用户点击"登录"按钮                    # ← 完全复用
+  Then  系统提示"账号或密码不正确"
+```
+
 
 ---
 
