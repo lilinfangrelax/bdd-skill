@@ -1,3 +1,5 @@
+# v1版本
+
 ## 一、我想做什么
 
 > 当时的任务背景和需求
@@ -31,3 +33,12 @@
 1. 需求文本的输入，需进行一定程度上的改造。输入质量会影响输出质量。**如何去提高输入质量，需考量**
 2. Scenario生成Given条件，需检查Background中的Given条件
 3. 在异常场景（Sad Path、Edge Path）上，skill应该限制生成的方式，多进行复用
+
+
+# v2版本
+
+> 2026-04-14 by storeview
+
+发现的问题 / 不足
+1. 只生成了happy path和简单的sad path，没有生成edge path
+2. 是否可以借助标签标记scenario，通常由哪些标签类型呢
