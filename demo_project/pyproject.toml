@@ -1,28 +1,28 @@
-[project]
-name = "demo-project"
-version = "0.1.0"
-description = "BDD testing project with pytest-bdd and playwright"
-authors = [
-    { name = "Your Name", email = "your.email@example.com" },
-]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-pytest = "^7.0"
-pytest-bdd = "^7.0"
-playwright = "^1.40"
-pytest-playwright = "^0.3.0"
-
-[tool.poetry.dev-dependencies]
-black = "^23.0"
-flake8 = "^6.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = "test_*.py"
-python_classes = "Test*"
-python_functions = "test_*"
+[project]
+name = "demo-project"
+version = "0.1.0"
+description = "BDD testing project with pytest-bdd and playwright"
+authors = [
+    { name = "Your Name", email = "your.email@example.com" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = "^7.0"
+pytest-bdd = "^7.0"
+playwright = "^1.40"
+pytest-playwright = "^0.3.0"
+
+[tool.poetry.dev-dependencies]
+black = "^23.0"
+flake8 = "^6.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
