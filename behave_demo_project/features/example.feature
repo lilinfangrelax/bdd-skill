@@ -6,9 +6,15 @@ Feature: 示例测试
     Scenario: 导航到GitHub
         Given 我打开浏览器
         When 我导航到 "https://github.com"
+        And 我等待 "2" 秒
+        And 我滚动页面到底部再回到顶部
+        And 我导航到 "https://github.com/explore"
+        And 我等待 "2" 秒
+        And 我导航到 "https://github.com"
         Then 我应该看到页面标题 "GitHub"
 
     Scenario: 验证页面触发了目标接口请求
         Given 我打开浏览器
         When 我打开用于触发请求的测试页面
+        And 我等待 "2" 秒
         Then 验证系统发送了指向 "httpbin.org/get" 的接口请求
